@@ -1,0 +1,90 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: gkeclustercomposition
+spec:
+  compositeTypeRef:
+    apiVersion: platform.crossplane.io/v1alpha1
+    kind: CompositeGKECluster
+  resources:
+    - name: gke-cluster
+      base:
+        apiVersion: container.gcp.crossplane.io/v1beta1
+        kind: GKECluster
+        spec:
+          forProvider:
+            location: "us-central1"
+            masterVersion: "latest"
+            network: "my-network"
+            subnetwork: "my-subnetwork"
+            removeDefaultNodePool: true
+            loggingService: "logging.googleapis.com/kubernetes"
+            monitoringService: "monitoring.googleapis.com/kubernetes"
+            workloadIdentityConfig:
+              identityNamespace: "{{ .spec.identityNamespace }}"
+            ipAllocationPolicy:
+              clusterIpv4CidrBlock: "{{ .spec.pods_ipv4_cidr_block }}"
+              servicesIpv4CidrBlock: "{{ .spec.services_ipv4_cidr_block }}"
+            privateClusterConfig:
+              enablePrivateEndpoint: false
+              enablePrivateNodes: true
+              masterIpv4CidrBlock: "{{ .spec.master_ipv4_cidr_block }}"
+      patches:
+        - fromFieldPath: "spec.cluster_name"
+          toFieldPath: "metadata.name"
+        - fromFieldPath: "spec.network_name"
+          toFieldPath: "spec.forProvider.network"
+        - fromFieldPath: "spec.subnet_name"
+          toFieldPath: "spec.forProvider.subnetwork"
+        - fromFieldPath: "spec.services_ipv4_cidr_block"
+          toFieldPath: "spec.forProvider.ipAllocationPolicy.servicesIpv4CidrBlock"
+
+    - name: node-pool
+      base:
+        apiVersion: container.gcp.crossplane.io/v1beta1
+        kind: NodePool
+        spec:
+          forProvider:
+            cluster: "{{ .metadata.name }}"
+            nodeConfig:
+              machineType: "{{ .spec.machine_type }}"
+              diskSizeGb: "{{ .spec.disk_size_gb }}"
+              serviceAccount: "{{ .spec.service_account }}"
+              oauthScopes:
+                - "https://www.googleapis.com/auth/logging.write"
+                - "https://www.googleapis.com/auth/monitoring"
+              preemptible: false
+              localSsdCount: "{{ .spec.local_ssd_count }}"
+            management:
+              autoUpgrade: false
+              autoRepair: true
+            nodeCount: "{{ .spec.node_count }}"
+      patches:
+        - fromFieldPath: "spec.cluster_name"
+          toFieldPath: "metadata.name"
+        - fromFieldPath: "spec.machine_type"
+          toFieldPath: "spec.forProvider.nodeConfig.machineType"
+
+    - name: gke-service-account
+      base:
+        apiVersion: iam.gcp.crossplane.io/v1beta1
+        kind: ServiceAccount
+        spec:
+          forProvider:
+            displayName: "A service account for GKE"
+      patches:
+        - fromFieldPath: "spec.cluster_name"
+          toFieldPath: "metadata.name"
+
+    - name: gke-iam-roles
+      base:
+        apiVersion: iam.gcp.crossplane.io/v1beta1
+        kind: IAMPolicyMember
+        spec:
+          forProvider:
+            member: "serviceAccount:{{ .spec.service_account }}"
+            role: "roles/containerregistry.ServiceAgent"
+      patches:
+        - fromFieldPath: "spec.project_id"
+          toFieldPath: "spec.forProvider.project"
+

@@ -1,0 +1,13 @@
+apiVersion: platform.crossplane.io/v1alpha1
+kind: GKEClusterClaim
+metadata:
+  name: my-claimed-gke-cluster
+  namespace: dev
+spec:
+  compositionSelector:
+    matchLabels:
+      provider: gke
+  parameters:
+    cluster_name: prod-cluster
+    location: us-central1
+    machine_type: n1-standard-2

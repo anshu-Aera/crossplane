@@ -1,0 +1,21 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositenetworks.networking.gcp.crossplane.io
+spec:
+  group: networking.gcp.crossplane.io
+  names:
+    kind: CompositeNetwork
+    plural: compositenetworks
+  claimNames:
+    kind: NetworkClaim
+    plural: networkclaims
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+  connectionSecretKeys:
+    - key: network
+    - key: subnet
+    - key: router
+    - key: nat_gateway
