@@ -52,7 +52,7 @@ spec:
     kind: GKEClusterClaim
     plural: gkeclusterclaims
   versions:
-    - name: v1
+    - name: v1alpha1
       served: true
       referenceable: true
       schema:
