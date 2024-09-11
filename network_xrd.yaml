@@ -14,8 +14,4 @@ spec:
     - name: v1alpha1
       served: true
       referenceable: true
-  connectionSecretKeys:
-    - key: network
-    - key: subnet
-    - key: router
-    - key: nat_gateway
+
