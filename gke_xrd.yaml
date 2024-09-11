@@ -36,6 +36,3 @@ spec:
               type: string
             disk_size_gb:
               type: integer
-  connectionSecretKeys:
-    - key: kubeconfig
-    - key: endpoint
