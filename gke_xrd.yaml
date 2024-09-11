@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositetkgcluster
+  name: compositegkeclusters.platform.crossplane.io
 spec:
   group: platform.crossplane.io
   names:
@@ -10,34 +10,32 @@ spec:
   claimNames:
     kind: GKEClusterClaim
     plural: gkeclusterclaims
-  version: v1
   versions:
     - name: v1alpha1
       served: true
       referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            cluster_name:
+              type: string
+            network_name:
+              type: string
+            subnet_name:
+              type: string
+            location:
+              type: string
+            services_ipv4_cidr_block:
+              type: string
+            pods_ipv4_cidr_block:
+              type: string
+            node_count:
+              type: integer
+            machine_type:
+              type: string
+            disk_size_gb:
+              type: integer
   connectionSecretKeys:
-    - name: kubeconfig
-    - name: endpoint
-  spec:
-    schema:
-      openAPIV3Schema:
-        type: object
-        properties:
-          cluster_name:
-            type: string
-          network_name:
-            type: string
-          subnet_name:
-            type: string
-          location:
-            type: string
-          services_ipv4_cidr_block:
-            type: string
-          pods_ipv4_cidr_block:
-            type: string
-          node_count:
-            type: integer
-          machine_type:
-            type: string
-          disk_size_gb:
-            type: integer
+    - key: kubeconfig
+    - key: endpoint
