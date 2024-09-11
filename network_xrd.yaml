@@ -14,4 +14,26 @@ spec:
     - name: v1alpha1
       served: true
       referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    vpc_name:
+                      type: string
+                    subnet_cidr_range:
+                      type: string
+                    region:
+                      type: string
+                    cluster_master_ip_cidr_range:
+                      type: string
+                    cluster_pods_ip_cidr_range:
+                      type: string
+                    cluster_services_ip_cidr_range:
+                      type: string
 
