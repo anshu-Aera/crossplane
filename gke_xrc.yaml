@@ -1,13 +1,34 @@
+# apiVersion: platform.crossplane.io/v1alpha1
+# kind: GKEClusterClaim
+# metadata:
+#   name: my-claimed-gke-cluster
+#   namespace: dev
+# spec:
+#   compositionSelector:
+#     matchLabels:
+#       provider: gke
+#   parameters:
+#     cluster_name: prod-cluster
+#     location: us-central1
+#     machine_type: n1-standard-2
+
+
 apiVersion: platform.crossplane.io/v1alpha1
 kind: GKEClusterClaim
 metadata:
   name: my-claimed-gke-cluster
   namespace: dev
 spec:
+  cluster_name: prod-cluster
+  location: us-central1
+  network_name: my-network
+  subnet_name: my-subnet
+  services_ipv4_cidr_block: 10.96.0.0/12
+  pods_ipv4_cidr_block: 10.244.0.0/16
+  machine_type: n1-standard-2
+  disk_size_gb: 100
+  node_count: 3
   compositionSelector:
     matchLabels:
       provider: gke
-  parameters:
-    cluster_name: prod-cluster
-    location: us-central1
-    machine_type: n1-standard-2
+
